@@ -1,0 +1,7 @@
+# PostgreSQL
+# ------------------------------------------------------------------------------
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+POSTGRES_DB=pdf_translator
+POSTGRES_USER=TyHmbsTTBVvpRsAyPOrAOCNuzMWTuhQH
+POSTGRES_PASSWORD=Mypm382FijcWW4qyH9og1b6Yrf4YWPSmXrcVu92FF15zkZZR71DdPsLoXIOfBIs1
