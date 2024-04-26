@@ -342,4 +342,5 @@ SPECTACULAR_SETTINGS = {
     "SERVE_PERMISSIONS": ["rest_framework.permissions.IsAdminUser"],
 }
 # Your stuff...
+
 # ------------------------------------------------------------------------------
