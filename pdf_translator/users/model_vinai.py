@@ -1,6 +1,6 @@
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
-tokenizer_en2vi = AutoTokenizer.from_pretrained("vinai/vinai-translate-en2vi-v2", src_lang="en_XX",use_fast = False)
+tokenizer_en2vi = AutoTokenizer.from_pretrained("vinai/vinai-translate-en2vi-v2", src_lang="en_XX",use_fast = True)
 model_en2vi = AutoModelForSeq2SeqLM.from_pretrained("vinai/vinai-translate-en2vi-v2")
 
 def translate_en2vi(en_text: str) -> str:
@@ -16,5 +16,5 @@ def translate_en2vi(en_text: str) -> str:
     vi_text = " ".join(vi_text)
     return vi_text
 
-en_text = "I haven't been to a public gym before. When I exercise in a private space, I feel more comfortable."
-print(translate_en2vi(en_text))
+# en_text = "I haven't been to a public gym before. When I exercise in a private space, I feel more comfortable."
+# print(translate_en2vi(en_text))

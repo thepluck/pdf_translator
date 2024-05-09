@@ -1,40 +1,273 @@
 {% extends "base.html" %}
 {% load static i18n%}
 {% block content %}
-      <link href="{% static 'css/home.css' %}" rel="stylesheet" />
+<!--      <link href="{% static 'css/home.css' %}" rel="stylesheet" />-->
+  <style>
+            .container {
+       display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: nowrap;
+    flex-direction: column;
+}
 
-    <h1>English to Vietnamese Translator</h1>
+button.trans {
+ border: none;
+ color: #fff;
+ background-image: linear-gradient(30deg, #0400ff, #4ce3f7);
+ border-radius: 20px;
+ background-size: 100% auto;
+ font-family: inherit;
+ font-size: 17px;
+ padding: 0.6em 1.5em;
+}
 
-             <div class="container">
+button.trans:hover {
+ background-position: right center;
+ background-size: 200% auto;
+ -webkit-animation: pulse 2s infinite;
+ animation: pulse512 1.5s infinite;
+}
 
-                <form enctype="multipart/form-data"  method="post" style="text-align:center">
+@keyframes pulse512 {
+ 0% {
+  box-shadow: 0 0 0 0 #05bada66;
+ }
+
+ 70% {
+  box-shadow: 0 0 0 10px rgb(218 103 68 / 0%);
+ }
+
+ 100% {
+  box-shadow: 0 0 0 0 rgb(218 103 68 / 0%);
+ }
+}
+
+.radio-inputs {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  border-radius: 0.5rem;
+  background-color: #EEE;
+  box-sizing: border-box;
+  box-shadow: 0 0 0px 1px rgba(0, 0, 0, 0.06);
+  padding: 0.25rem;
+  width: 300px;
+  font-size: 14px;
+}
+
+.radio-inputs .radio {
+  flex: 1 1 auto;
+  text-align: center;
+}
+
+.radio-inputs .radio input {
+  display: none;
+}
+
+.radio-inputs .radio .name {
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  border: none;
+  padding: .5rem 0;
+  color: rgba(51, 65, 85, 1);
+  transition: all .15s ease-in-out;
+}
+
+.radio-inputs .radio input:checked + .name {
+  background-color: #fff;
+  font-weight: 600;
+}
+
+
+.file-upload-form {
+  width: fit-content;
+  height: fit-content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.file-upload-label input {
+  display: none;
+}
+.file-upload-label svg {
+  height: 50px;
+  fill: rgb(82, 82, 82);
+  margin-bottom: 20px;
+}
+.file-upload-label {
+  cursor: pointer;
+  background-color: #ddd;
+  padding: 20px 80px;
+  border-radius: 40px;
+  border: 2px dashed rgb(82, 82, 82);
+  margin-top:20px;
+  box-shadow: 0px 0px 200px -50px rgba(0, 0, 0, 0.719);
+}
+.file-upload-design {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+.browse-button {
+  background-color: rgb(82, 82, 82);
+  padding: 5px 15px;
+  border-radius: 10px;
+  color: white;
+  transition: all 0.3s;
+}
+.browse-button:hover {
+  background-color: rgb(14, 14, 14);
+}
+
+.radio-button-container {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.radio-button {
+  display: inline-block;
+  position: relative;
+  cursor: pointer;
+}
+
+.radio-button__input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.radio-button__label {
+  display: inline-block;
+  padding-left: 30px;
+  margin-bottom: 10px;
+  position: relative;
+  font-size: 10px;
+  font-family: Arial, Helvetica, sans-serif;
+  color: black;
+  font-weight: 600;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+.radio-button__custom {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  border: 2px solid #555;
+  margin-top:-5px;
+  transition: all 0.3s ease;
+}
+
+.radio-button__input:checked + .radio-button__label .radio-button__custom {
+  background-color: #4c8bf5;
+  border-color: transparent;
+  transform: scale(0.8);
+  box-shadow: 0 0 20px #4c8bf580;
+}
+
+.radio-button__input:checked + .radio-button__label {
+  color: #4c8bf5;
+}
+
+.radio-button__label:hover .radio-button__custom {
+  transform: scale(1.2);
+  border-color: #4c8bf5;
+  box-shadow: 0 0 20px #4c8bf580;
+}
+}
+
+
+    </style>
+    <h1 style=" font-family: Arial, Helvetica, sans-serif;">English to Vietnamese Translator</h1>
+
+
+             <div class="container" style=" font-family: Arial, Helvetica, sans-serif;">
+
+                <form enctype="multipart/form-data"  class="file-upload-form" method="post" style="text-align:center; ">
                       {% csrf_token %}
+                       <div class="container">
                   <div class="radio-inputs">
                         <label class="radio">
-                          <input  type="submit" name="radio" value="file_text">
-                          <span class="name">File text</span>
+                          <input  type="submit" name="radio" checked="" value="file_text" >
+                          <span class="name" > File text</span>
                         </label>
-                        <label class="radio">
+                        <label class="radio"  style="background-color: #555555; border-radius:30px" >
                           <input type="submit" name="radio" value="file_pdf">
-                          <span class="name">File PDF</span>
+                          <span class="name" style="color:#FFFFFF" >File PDF</span>
                         </label>
 
                         <label class="radio">
-                          <input type="submit" name="radio" checked="" value="Text">
+                          <input type="submit" name="radio" value="Text">
                           <span class="name">Text</span>
                         </label>
                       </div>
 
-                      <div>
-            <label> Chose file PDF </label>
-                  <input class="input" name="input_file" id="file" type="file" accept=" .pdf "  />
+ <h3>Chọn model dịch</h3>
+
+                    <div class="radio-button-container" >
+  <div class="radio-button">
+  <input type="radio" class="radio-button__input" id="radio1" value="vin" name="radio-model" checked>
+  <label class="radio-button__label" for="radio1">
+    <span class="radio-button__custom"></span>
+    vinai-translate-en2vi-v2
+  </label>
+</div>
+<div class="radio-button">
+  <input type="radio" class="radio-button__input" id="radio2" value="gg" name="radio-model" >
+  <label class="radio-button__label" for="radio2">
+    <span class="radio-button__custom"></span>
+    google-translator
+  </label>
+</div>
+<div class="radio-button">
+  <input type="radio" class="radio-button__input" id="radio3" value="viet" name="radio-model">
+  <label class="radio-button__label" for="radio3">
+    <span class="radio-button__custom"></span>
+    vietAi-translate
+  </label>
+</div>
+</div>
+
+                           <label for="file" class="file-upload-label">
+    <div class="file-upload-design">
+      <svg viewBox="0 0 640 512" height="1em">
+        <path
+          d="M144 480C64.5 480 0 415.5 0 336c0-62.8 40.2-116.2 96.2-135.9c-.1-2.7-.2-5.4-.2-8.1c0-88.4 71.6-160 160-160c59.3 0 111 32.2 138.7 80.2C409.9 102 428.3 96 448 96c53 0 96 43 96 96c0 12.2-2.3 23.8-6.4 34.6C596 238.4 640 290.1 640 352c0 70.7-57.3 128-128 128H144zm79-217c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l39-39V392c0 13.3 10.7 24 24 24s24-10.7 24-24V257.9l39 39c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0l-80 80z"
+        ></path>
+      </svg>
+      <p>Up load your PDF file</p>
+      <p>or</p>
+      <span class="browse-button">Browse file</span>
+    </div>
+<!--    <input id="file" type="file" />-->
+  </label>
+
+
+                <div style="margin-top: 40px">
+
+            <label style="margin-right: 10px"> Choose file text</label><input class="input" name="input_file" id="file" type="file" accept=".pdf"  />
 
 </div>
 
-                                  <button style="margin-top: 20px"> Translate</button>
 
+                  <button name="translate" class="trans" style="margin-top: 20px"> Translate</button>
 
-                </form>
+                </div>
+                  </form>
+
+                 <a style="margin-top: 20px; color:red;" >{{data}}</a>
+
              </div>
-
 {% endblock content %}

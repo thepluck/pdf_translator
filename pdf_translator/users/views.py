@@ -10,7 +10,11 @@ from pdf_translator.users.models import User
 from django.core.files.storage import FileSystemStorage
 from django.core.files.base import ContentFile
 from django.http import HttpResponse
-
+from .model_vinai import translate_en2vi
+from .model_vietAi import translate_vietai
+from PyPDF2 import PdfReader
+from googletrans import Translator
+translator = Translator()
 def text_mode(request):
     if request.method == "POST":
         if 'radio' in request.POST:
@@ -21,8 +25,21 @@ def text_mode(request):
                 return redirect('/users/')
             elif mode == 'file_pdf':
                 return redirect('/users/~pdf_mode/')
-        return render(request, 'pages/translate_text.html')
+        data = request.POST['textinput']
+        model = request.POST['radio-model']
+        data_tran = ''
+        if model == 'vin':
+            data_tran = translate_en2vi(data)
+        elif model == 'viet':
+            data_tran = translate_vietai(data)
+        elif model == 'gg':
+            data_tran =  translator.translate(data,src='en',dest='vi')
+            data_tran = data_tran.text
+
+            data_tran = data_tran + ' (by google translate)'
+        return render(request, 'pages/translate_text.html',{"output": data_tran})
     return render(request,'pages/translate_text.html')
+
 def pdf_mode(request):
     if request.method == "POST":
         if 'radio' in request.POST:
@@ -38,10 +55,36 @@ def pdf_mode(request):
             fs = FileSystemStorage()
             filename = fs.save(data.name, data)
             uploaded_file_url = fs.url(filename)
-            file_to_send = data
-            response = HttpResponse(file_to_send, 'application/x-gzip')
-            response['Content-Length'] = file_to_send.size
-            response['Content-Disposition'] = f'attachment; filename= {filename}'
+
+            text = ''
+            model = request.POST['radio-model']
+            if model == 'vin':
+                file = open(f'pdf_translator/media/{filename}', 'rb')
+                renderr = PdfReader(file)
+                number_of_pages = len(renderr.pages)
+                for page in range(number_of_pages):
+                    p = renderr.pages[page]
+                    text += translate_en2vi(p.extract_text()) + '\n'
+            elif model == 'viet':
+                file = open(f'pdf_translator/media/{filename}', 'rb')
+                renderr = PdfReader(file)
+                number_of_pages = len(renderr.pages)
+                for page in range(number_of_pages):
+                    p = renderr.pages[page]
+                    text += translate_vietai(p.extract_text()) + '\n'
+            elif model == 'gg':
+                file = open(f'pdf_translator/media/{filename}', 'rb')
+                renderr = PdfReader(file)
+                number_of_pages = len(renderr.pages)
+                for page in range(number_of_pages):
+                    p = renderr.pages[page]
+                    trans = translator.translate(p.extract_text(),src='en',dest='vi')
+                    text += trans.text + '\n'
+            # d ịch file
+
+            response = HttpResponse(text, 'application/x-gzip')
+            response['Content-Disposition'] = f'attachment; filename= output.doc'
+            # trả cho người dùng file đã dịch
             return response
 
         return render(request,'pages/translate_pdf.html')
@@ -62,10 +105,32 @@ def get_input_file(request):
             fs = FileSystemStorage()
             filename = fs.save(data.name, data)
             uploaded_file_url = fs.url(filename)
-            file_to_send = data
-            response = HttpResponse(file_to_send, 'application/x-gzip')
-            response['Content-Length'] = file_to_send.size
-            response['Content-Disposition'] = f'attachment; filename= {filename}'
+            text_tran = ''
+            model = request.POST['radio-model']
+            if model == 'vin':
+                with open(f'pdf_translator/media/{filename}', 'r+') as inp:
+                    text = inp.readline()
+                    while text:
+                        text_tran += translate_en2vi(text) + '\n'
+                        text = inp.readline()
+            elif model == 'viet':
+                with open(f'pdf_translator/media/{filename}', 'r+') as inp:
+                    text = inp.readline()
+                    while text:
+                        text_tran += translate_vietai(text) + '\n'
+                        text = inp.readline()
+            elif model == 'gg':
+                with open(f'pdf_translator/media/{filename}', 'r+') as inp:
+                    text = inp.readline()
+                    while text:
+                        trans = translator.translate(text,src='en',dest='vi')
+                        text_tran += trans.text + '\n'
+                        text = inp.readline()
+
+            # text_trans = translate_en2vi(text) #d ịch file
+            response = HttpResponse(text_tran, 'application/x-gzip')
+            response['Content-Disposition'] = f'attachment; filename= {model}.txt'
+            # trả cho người dùng file đã dịch
             return response
 
         return render(request,"pages/home.html",{'data':'None'})
