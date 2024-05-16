@@ -24,7 +24,10 @@ urlpatterns = [
     path("users/", include("pdf_translator.users.urls", namespace="users")),
     path("accounts/", include("allauth.urls")),
     # Your stuff: custom urls includes go here
-    # ...
+    path(
+        "translate/",
+        include("pdf_translator.translation.urls", namespace="translation"),
+    ),
     # Media files
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
 ]
