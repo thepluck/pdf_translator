@@ -39,7 +39,17 @@ License: MIT
 See detailed [cookiecutter-django Docker documentation](http://cookiecutter-django.readthedocs.io/en/latest/deployment-with-docker.html).
 
 ### User story
-
+- Với vai trò là học sinh tôi muốn một trang web có khả năng dịch tài liệu vì tôi gặp khó khăn với tiếng Anh.
 ### Personas
+- Nguyễn Văn A là một sinh viên học CNNT thường xuyên phải tiếp xúc sử dụng các tài liệu giáo trình bằng tiếng Anh. Là một người có nền tảng tiếng Anh chưa vững vì vậy A liên tục gặp khó khăn với việc sử dụng tiếng Anh, do có nhiều loại mô hình dịch tuy nhiên mỗi cái áp dụng cho một ngữ cảnh trường hợp khác nhau. Vì vậy 1 trang web có tính năng cho phép dịch tài liệu bằng nhiều mô hình khác nhau được A quan tâm đến và sử dụng để dịch những tài liệu khác nhau.
 
 ### Architecture
+- Sử dụng công nghệ Cookiecutter Django cung cấp template cho một ứng dụng Django hoàn chỉnh. 
+https://cookiecutter-django.readthedocs.io/en/latest/index.html
+- Tích hợp sẵn các công nghệ hiện đại vào ứng dụng như:
++ Docker trong việc đóng gói sảm phẩm triển khai và quản lý môi trường.
++ Sử dụng PostgetSQL làm cơ sở dữ liệu.
++ Sử dụng Celery giúp xử lý các tác vụ không đồng bộ.
++ Sử dụng Redis cho caching và message broker.
+- Tích hợp sẵn giao diện người dùng và các chức năng xác thực người dùng như đăng ký, đăng nhập
+- Sử dụng các mô hình pre-train được cung cấp sẵn trên huggingface do vinAI,vietAI cung cấp và thư viện googletrans của google.
