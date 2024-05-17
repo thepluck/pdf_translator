@@ -5,9 +5,12 @@ from django.db.models import CharField
 from django.db.models import EmailField
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-
+from django.db import models
+from django.contrib.auth.models import User
 from .managers import UserManager
-
+# class Document(models.Model):
+#     docfile = models.FileField(upload_to='documents')
+#     user = models.ForeignKey(User)
 
 class User(AbstractUser):
     """
