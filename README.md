@@ -7,75 +7,33 @@ Nguyễn Hoàng Vũ
 
 License: MIT
 
-## Settings
+## Dự án website dịch văn bản tài liệu sử dụng nhiều mô hình khác nhau
 
-Moved to [settings](http://cookiecutter-django.readthedocs.io/en/latest/settings.html).
+## Cách chạy dự án
 
-## Basic Commands
+## Các lệnh chạy ứng dụng trên local
 
-### Setting Up Your Users
+### Yêu cầu cài đặt Docker trên máy tính.
 
-- To create a **normal user account**, just go to Sign Up and fill out the form. Once you submit it, you'll see a "Verify Your E-mail Address" page. Go to your console to see a simulated email verification message. Copy the link into your browser. Now the user's email should be verified and ready to go.
+- Chạy lệnh sau để build các image.
 
-- To create a **superuser account**, use this command:
+      $ docker compose -f local.yml build
 
-      $ python manage.py createsuperuser
+  câu lệch này chạy lần đầu có thể tốn nhiều thời gian tuy nhiên chỉ chạy 1 lần duy nhất.
 
-For convenience, you can keep your normal user logged in on Chrome and your superuser logged in on Firefox (or similar), so that you can see how the site behaves for both kinds of users.
+- Tiếp theo khởi chạy các container câu lệch nay được chạy mỗi khi cần chạy ứng dụng.
 
-### Type checks
+      $ docker compose -f local.yml up
+  
+- Khởi tạo dữ liệu cho trang web : lệnh này cũng chỉ chạy 1 lần hoặc khi có sự thay đổi nào liên quan đến dữ liệu.
+  
+      $ docker compose -f local.yml run --rm django python manage.py migrate
 
-Running type checks with mypy:
+- Tạo tài khoản admin
 
-    $ mypy pdf_translator
-
-### Test coverage
-
-To run the tests, check your test coverage, and generate an HTML coverage report:
-
-    $ coverage run -m pytest
-    $ coverage html
-    $ open htmlcov/index.html
-
-#### Running tests with pytest
-
-    $ pytest
-
-### Live reloading and Sass CSS compilation
-
-Moved to [Live reloading and SASS compilation](https://cookiecutter-django.readthedocs.io/en/latest/developing-locally.html#sass-compilation-live-reloading).
-
-### Celery
-
-This app comes with Celery.
-
-To run a celery worker:
-
-```bash
-cd pdf_translator
-celery -A config.celery_app worker -l info
-```
-
-Please note: For Celery's import magic to work, it is important _where_ the celery commands are run. If you are in the same folder with _manage.py_, you should be right.
-
-To run [periodic tasks](https://docs.celeryq.dev/en/stable/userguide/periodic-tasks.html), you'll need to start the celery beat scheduler service. You can start it as a standalone process:
-
-```bash
-cd pdf_translator
-celery -A config.celery_app beat
-```
-
-or you can embed the beat service inside a worker with the `-B` option (not recommended for production use):
-
-```bash
-cd pdf_translator
-celery -A config.celery_app worker -B -l info
-```
-
-## Deployment
-
-The following details how to deploy this application.
-
+      $ docker compose -f docker-compose.local.yml run --rm django python manage.py createsuperuser
+ 
+- Mở trình duyệt và truy cập vào địa chỉ  http://127.0.0.1:8000/ hoặc http://127.0.0.1:8000/admin để truy cập vào trang admin
 ### Docker
 
 See detailed [cookiecutter-django Docker documentation](http://cookiecutter-django.readthedocs.io/en/latest/deployment-with-docker.html).
