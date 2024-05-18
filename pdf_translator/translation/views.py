@@ -14,21 +14,6 @@ from .forms import UploadedFileForm
 logger = logging.getLogger(__name__)
 
 
-def translate_text(en_text: str) -> str:
-    tokenizer = TranslationConfig.tokenizer
-    model = TranslationConfig.model
-    input_ids = tokenizer(en_text, return_tensors="pt").input_ids
-    output_ids = model.generate(
-        input_ids,
-        decoder_start_token_id=tokenizer.lang_code_to_id["vi_VN"],
-        num_return_sequences=1,
-        num_beams=5,
-        early_stopping=True,
-    )
-    vi_text = tokenizer.batch_decode(output_ids, skip_special_tokens=True)
-    return " ".join(vi_text)
-
-
 class TranslateTextView(LoginRequiredMixin, View):
     template_name = "translation/translate_text.html"
 
@@ -38,7 +23,7 @@ class TranslateTextView(LoginRequiredMixin, View):
                 return redirect("translation:translate-file")
 
         input_text = request.POST.get("input_text")
-        output_text = translate_text(input_text) if input_text else ""
+        output_text = TranslationConfig.tlr.translate_text(input_text) if input_text else ""
         return render(
             request,
             self.template_name,
@@ -51,8 +36,10 @@ class TranslateTextView(LoginRequiredMixin, View):
 
 class TranslateFileView(LoginRequiredMixin, View):
     template_name = "translation/translate_file.html"
+    output_dir = Path(settings.MEDIA_ROOT) / "output"
 
     def post(self, request, *args, **kwargs):
+        self.output_dir.mkdir(exist_ok=True)
         if "mode" in request.POST:
             if request.POST.get("mode") == "text-mode":
                 return redirect("translation:translate-text")
@@ -69,13 +56,23 @@ class TranslateFileView(LoginRequiredMixin, View):
             return response
         form = UploadedFileForm(request.POST, request.FILES)
         if form.is_valid():
-            uploaded_file = form.save()
+            uploaded_file = str(form.save())
+            uploaded_file_path = Path(settings.MEDIA_ROOT) / uploaded_file
+            output_file_path = self.output_dir / uploaded_file_path.name
+            if uploaded_file_path.suffix == ".pdf":
+                TranslationConfig.tlr.translate_pdf(uploaded_file_path, self.output_dir)
+            else:
+                input_text = uploaded_file_path.read_text()
+                output_text = TranslationConfig.tlr.translate_text(input_text)
+                output_file_path.write_text(output_text)
+
             return render(
                 request,
                 self.template_name,
                 {
                     "form": form,
                     "uploaded_file": uploaded_file,
+                    "output_file": output_file_path.relative_to(settings.MEDIA_ROOT),
                 },
             )
         return render(request, self.template_name)

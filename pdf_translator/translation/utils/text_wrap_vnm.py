@@ -43,12 +43,10 @@ class TextWrapper(textwrap.TextWrapper):
                 del chunks[-1]
 
             while chunks:
-                width = column_width(chunks[-1])
-
-                if cur_len + width <= width:
+                ll = column_width(chunks[-1])
+                if cur_len + ll <= width:
                     cur_line.append(chunks.pop())
-                    cur_len += width
-
+                    cur_len += ll
                 else:
                     break
 

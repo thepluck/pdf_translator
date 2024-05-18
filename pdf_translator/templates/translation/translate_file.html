@@ -46,6 +46,11 @@
             <input name="download_path" type="hidden" value="{{ uploaded_file }}" />
             <button class="file" style="margin-top: 20px">{{ uploaded_file }}</button>
           </form>
+          <form method="post">
+            {% csrf_token %}
+            <input name="download_path" type="hidden" value="{{ output_file }}" />
+            <button class="file" style="margin-top: 20px">{{ output_file }}</button>
+          </form>
         {% endif %}
       </div>
     </form>

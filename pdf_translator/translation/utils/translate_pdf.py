@@ -1,6 +1,5 @@
 import copy
 import math
-import random
 import re
 from pathlib import Path
 
@@ -19,16 +18,10 @@ from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.models.detection.mask_rcnn import MaskRCNNPredictor
 from torchvision.transforms import transforms
 from tqdm import tqdm
-from translation.views import translate_text
+from transformers import AutoModelForSeq2SeqLM
+from transformers import AutoTokenizer
 
 from .text_wrap_vnm import fw_fill_vi
-
-seed = 1234
-random.seed(seed)
-torch.manual_seed(seed)
-torch.cuda.manual_seed_all(seed)
-torch.backends.cudnn.deterministic = True
-torch.backends.cudnn.benchmark = False
 
 CATEGORIES2LABELS = {
     0: "bg",
@@ -38,6 +31,7 @@ CATEGORIES2LABELS = {
     4: "table",
     5: "figure",
 }
+
 MODEL_PATH = Path(settings.STATIC_ROOT) / "model_196000.pth"
 
 
@@ -90,6 +84,18 @@ class TranslationLayoutRecovery:
     def __init__(self):
         self._load_init()
 
+    def translate_text(self, en_text: str) -> str:
+        input_ids = self.tokenizer(en_text, return_tensors="pt").input_ids
+        output_ids = self.model.generate(
+            input_ids,
+            decoder_start_token_id=self.tokenizer.lang_code_to_id["vi_VN"],
+            num_return_sequences=1,
+            num_beams=5,
+            early_stopping=True,
+        )
+        vi_text = self.tokenizer.batch_decode(output_ids, skip_special_tokens=True)
+        return " ".join(vi_text)
+
     def _repeated_substring(self, s: str):
         n = len(s)
         for i in range(10, n // 2 + 1):
@@ -130,12 +136,12 @@ class TranslationLayoutRecovery:
             Path to the output directory
         """
         pdf_images = convert_from_path(input_path, dpi=self.DPI)
-        pdf_files = []
         reached_references = False
 
         # Batch
         idx = 0
         batch_size = 8
+        pil_images = []
         for _ in tqdm(range(math.ceil(len(pdf_images) / batch_size))):
             image_list = pdf_images[idx : idx + batch_size]
             if not reached_references:
@@ -143,9 +149,21 @@ class TranslationLayoutRecovery:
                     image_list=image_list,
                     reached_references=reached_references,
                 )
+
+            for [translated_image, _] in image_list:
+                pil_image = Image.fromarray(translated_image)
+                pil_image = pil_image.convert("RGB")
+                pil_images.append(pil_image)
+
             idx += batch_size
 
-        self._merge_pdfs(pdf_files)
+        pil_images[0].save(
+            output_path / input_path.name,
+            "PDF",
+            resolution=100.00,
+            save_all=True,
+            append_images=pil_images[1:],
+        )
 
     def _load_init(self):
         """Backend function for loading models.
@@ -162,16 +180,12 @@ class TranslationLayoutRecovery:
         self.num_classes = len(CATEGORIES2LABELS.keys())
         self.pub_model = get_instance_segmentation_model(self.num_classes)
 
-        if MODEL_PATH.exists():
-            self.checkpoint_path = MODEL_PATH
-
-        checkpoint = torch.load(self.checkpoint_path, map_location="cpu")
+        checkpoint = torch.load(MODEL_PATH, map_location="cpu")
         self.pub_model.load_state_dict(checkpoint["model"])
-        self.pub_model = self.pub_model.to("cuda")
         self.pub_model.eval()
 
         # Recognition model: PaddleOCR
-        self.ocr_model = easyocr.Reader(["en"], gpu=True)
+        self.ocr_model = easyocr.Reader(["en"], model_storage_directory=settings.STATIC_ROOT + "/easyocr")
 
         self.transform = transforms.Compose(
             [
@@ -179,6 +193,14 @@ class TranslationLayoutRecovery:
                 transforms.ToTensor(),
             ],
         )
+
+        self.tokenizer = AutoTokenizer.from_pretrained("vinai/vinai-translate-en2vi-v2", src_lang="en_XX")
+        model_path = Path(settings.STATIC_ROOT) / "model"
+        if model_path.exists():
+            self.model = AutoModelForSeq2SeqLM.from_pretrained(model_path)
+        else:
+            self.model = AutoModelForSeq2SeqLM.from_pretrained("vinai/vinai-translate-en2vi-v2")
+        self.model.save_pretrained(model_path)
 
     def _crop_img(self, box, ori_img):
         new_box_0 = int(box[0] / self.rat) - 20
@@ -216,7 +238,7 @@ class TranslationLayoutRecovery:
                     ocr_text = " ".join(ocr_results)
                     if len(ocr_text) > 1:
                         text = re.sub(r"\n|\t|\[|\]|\/|\|", " ", ocr_text)
-                        translated_text = self._translate(text)
+                        translated_text = self.translate_text(text)
                         translated_text = re.sub(
                             r"\n|\t|\[|\]|\/|\|",
                             " ",
@@ -370,68 +392,3 @@ class TranslationLayoutRecovery:
                 break
 
         return list_returned_images, reached_references
-
-    def _translate(self, text: str) -> str:
-        """Translate the text in PDF files using
-        the translation model.
-
-        If the text is too long, it will be splited by rule-based method
-        so that each sentence should be within 450 characters.
-
-        Parameters
-        ----------
-        text: str
-            Text to be translated.
-
-        Returns
-        -------
-        str
-            Translated text.
-        """
-        texts = self._split_text(text, 450)
-
-        translated_texts = []
-        for t in texts:
-            http_res = ("http" in t) or ("https" in t)
-            res = translate_text(t) if not http_res else t
-            translated_texts.append(res)
-
-        return " ".join(translated_texts)
-
-    def _split_text(self, text: str, text_limit_length: int = 448) -> list[str]:
-        """Split text into chunks of sentences within text_limit_length.
-
-        Parameters
-        ----------
-        text: str
-            Text to be split.
-        text_limit_length: int
-            Maximum length of each chunk. Defaults to 448.
-
-        Returns
-        -------
-        List[str]
-            List of text chunks,
-            each of which is shorter than text_limit_length.
-        """
-        if len(text) < text_limit_length:
-            return [text]
-
-        sentences = text.rstrip().split(". ")
-        sentences = [s + ". " for s in sentences[:-1]] + sentences[-1:]
-        result = []
-        current_text = ""
-        for sentence in sentences:
-            sent = str(sentence)
-            if len(current_text) + len(sent) < text_limit_length:
-                current_text += sent
-            else:
-                if current_text:
-                    result.append(current_text)
-                while len(sent) >= text_limit_length:
-                    result.append(sent[: text_limit_length - 1])
-                    sent = sent[text_limit_length - 1 :].lstrip()
-                current_text = sent
-        if current_text:
-            result.append(current_text)
-        return result

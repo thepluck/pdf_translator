@@ -1,9 +1,8 @@
 from django.db import models
 
 
-class UploadedFile(models.Model):
+class FileModel(models.Model):
     file = models.FileField(upload_to="uploads/")
-    file_name = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

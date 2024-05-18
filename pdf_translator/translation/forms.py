@@ -1,9 +1,9 @@
 from django import forms
 
-from .models import UploadedFile
+from .models import FileModel
 
 
 class UploadedFileForm(forms.ModelForm):
     class Meta:
-        model = UploadedFile
+        model = FileModel
         fields = ["file"]
