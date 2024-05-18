@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% load static i18n %}
+
+{% block content %}
+  <link href="{% static 'css/translate_file.css' %}"
+        rel="stylesheet"
+        xmlns="http://www.w3.org/1999/html" />
+  <h1 style="font-family: Arial, Helvetica, sans-serif">English to Vietnamese Translator</h1>
+  <div class="container" style="font-family: Arial, Helvetica, sans-serif">
+    <form enctype="multipart/form-data"
+          class="file-upload-form"
+          method="post"
+          style="text-align: center">
+      {% csrf_token %}
+      <div class="container">
+        <div class="radio-inputs">
+          <label class="radio" style="background-color: #555555; border-radius: 30px">
+            <input type="submit" name="mode" value="file-mode" />
+            <span class="name" style="color: #ffffff">File Text/PDF</span>
+          </label>
+          <label class="radio">
+            <input type="submit" name="mode" value="text-mode" />
+            <span class="name">Text</span>
+          </label>
+        </div>
+        <label for="file-upload" class="file-upload-label">
+          <div class="file-upload-design">
+            <svg viewBox="0 0 640 512" height="1em">
+              <path d="M144 480C64.5 480 0 415.5 0 336c0-62.8 40.2-116.2 96.2-135.9c-.1-2.7-.2-5.4-.2-8.1c0-88.4 71.6-160 160-160c59.3 0 111 32.2 138.7 80.2C409.9 102 428.3 96 448 96c53 0 96 43 96 96c0 12.2-2.3 23.8-6.4 34.6C596 238.4 640 290.1 640 352c0 70.7-57.3 128-128 128H144zm79-217c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l39-39V392c0 13.3 10.7 24 24 24s24-10.7 24-24V257.9l39 39c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0l-80 80z" />
+            </svg>
+            <p>
+              Drag and drop a file or
+              <br />
+              click here to select a file
+            </p>
+          </div>
+        </label>
+        <form method="post" enctype="multipart/form-data">
+          <input name="file" id="file-upload" type="file" accept=".pdf,.txt" hidden />
+          <button name="translate" class="trans" style="margin-top: 20px">Translate</button>
+        </form>
+        {% if uploaded_file %}
+          <form method="post">
+            {% csrf_token %}
+            <input name="download_path" type="hidden" value="{{ uploaded_file }}" />
+            <button class="file" style="margin-top: 20px">{{ uploaded_file }}</button>
+          </form>
+        {% endif %}
+      </div>
+    </form>
+    <a style="margin-top: 20px; color: red">{{ data }}</a>
+  </div>
+{% endblock content %}

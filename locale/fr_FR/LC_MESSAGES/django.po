@@ -1,6 +1,6 @@
 # Translations for the PDF Translator project
 # Copyright (C) 2024 Vu Nguyen Hoang
-# Vu Nguyen Hoang <nghoangvu24@gmail.com>, 2024.
+# Vu Nguyen Hoang <vu-nguyen-hoang@pdf-translator.io>, 2024.
 #
 #, fuzzy
 msgid ""
