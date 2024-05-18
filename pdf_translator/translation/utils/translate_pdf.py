@@ -328,7 +328,7 @@ class TranslationLayoutRecovery:
         self.rat = 1000 / img.shape[0]
 
         img = cv2.resize(img, None, fx=self.rat, fy=self.rat)
-        img = self.transform(img).cuda()
+        img = self.transform(img)
 
         return [img, ori_img]
 
