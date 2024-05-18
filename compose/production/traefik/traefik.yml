@@ -15,14 +15,11 @@ entryPoints:
     # https
     address: ':443'
 
-  flower:
-    address: ':5555'
-
 certificatesResolvers:
   letsencrypt:
     # https://doc.traefik.io/traefik/https/acme/#lets-encrypt
     acme:
-      email: 'nghoangvu24@gmail.com'
+      email: 'vu-nguyen-hoang@pdf-translator.io'
       storage: /etc/traefik/acme/acme.json
       # https://doc.traefik.io/traefik/https/acme/#httpchallenge
       httpChallenge:
@@ -41,25 +38,6 @@ http:
         # https://doc.traefik.io/traefik/routing/routers/#certresolver
         certResolver: letsencrypt
 
-    flower-secure-router:
-      rule: 'Host(`pdf-translator.io`)'
-      entryPoints:
-        - flower
-      service: flower
-      tls:
-        # https://doc.traefik.io/traefik/master/routing/routers/#certresolver
-        certResolver: letsencrypt
-
-    web-media-router:
-      rule: '(Host(`pdf-translator.io`) || Host(`www.pdf-translator.io`)) && PathPrefix(`/media/`)'
-      entryPoints:
-        - web-secure
-      middlewares:
-        - csrf
-      service: django-media
-      tls:
-        certResolver: letsencrypt
-
   middlewares:
     csrf:
       # https://doc.traefik.io/traefik/master/middlewares/http/headers/#hostsproxyheaders
@@ -72,16 +50,6 @@ http:
       loadBalancer:
         servers:
           - url: http://django:5000
-
-    flower:
-      loadBalancer:
-        servers:
-          - url: http://flower:5555
-
-    django-media:
-      loadBalancer:
-        servers:
-          - url: http://nginx:80
 
 providers:
   # https://doc.traefik.io/traefik/master/providers/file/

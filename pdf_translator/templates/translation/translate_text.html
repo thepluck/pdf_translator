@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% load static i18n %}
+
+{% block content %}
+  <link href="{% static 'css/translate_text.css' %}"
+        rel="stylesheet"
+        xmlns="http://www.w3.org/1999/html" />
+  <h1 style="font-family: Arial, Helvetica, sans-serif">English to Vietnamese Translator</h1>
+  <div class="container" style="font-family: Arial, Helvetica, sans-serif">
+    <form enctype="multipart/form-data"
+          method="post"
+          style="text-align: center">
+      {% csrf_token %}
+      <div class="container">
+        <div class="radio-inputs">
+          <label class="radio">
+            <input type="submit" name="mode" value="file-mode" />
+            <span class="name">File Text/PDF</span>
+          </label>
+          <label class="radio" style="background-color: #555555; border-radius: 30px">
+            <input type="submit" name="mode" value="text-mode" />
+            <span class="name" style="color: #ffffff">Text</span>
+          </label>
+        </div>
+        <div style="margin-top: 40px; display: flex">
+          <textarea name="input_text" class="input" placeholder="your English text here">
+{{ input_text }}</textarea>
+          <textarea class="input" placeholder="Translated text" readonly>
+{{ output_text }}</textarea>
+        </div>
+        <button name="translate" class="trans" style="margin-top: 20px">Translate</button>
+      </div>
+    </form>
+    <a style="margin-top: 20px; color: red">{{ data }}</a>
+  </div>
+{% endblock content %}
