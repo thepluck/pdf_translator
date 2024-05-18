@@ -6,7 +6,7 @@ INT-2008 final project
 - Nguyễn Đức Anh
 - Lê Tuấn Anh
 
-  
+
 [![Built with Cookiecutter Django](https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg?logo=cookiecutter)](https://github.com/cookiecutter/cookiecutter-django/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
@@ -29,15 +29,15 @@ License: MIT
 - Tiếp theo khởi chạy các container câu lệch nay được chạy mỗi khi cần chạy ứng dụng.
 
       $ docker compose -f local.yml up
-  
+
 - Khởi tạo dữ liệu cho trang web : lệnh này cũng chỉ chạy 1 lần hoặc khi có sự thay đổi nào liên quan đến dữ liệu.
-  
+
       $ docker compose -f local.yml run --rm django python manage.py migrate
 
 - Tạo tài khoản admin
 
       $ docker compose -f docker-compose.local.yml run --rm django python manage.py createsuperuser
- 
+
 - Mở trình duyệt và truy cập vào địa chỉ  http://127.0.0.1:8000/ hoặc http://127.0.0.1:8000/admin để truy cập vào trang admin
 ### Docker
 
@@ -49,7 +49,7 @@ See detailed [cookiecutter-django Docker documentation](http://cookiecutter-djan
 - Nguyễn Văn A là một sinh viên học CNNT thường xuyên phải tiếp xúc sử dụng các tài liệu giáo trình bằng tiếng Anh. Là một người có nền tảng tiếng Anh chưa vững vì vậy A liên tục gặp khó khăn với việc sử dụng tiếng Anh, do có nhiều loại mô hình dịch tuy nhiên mỗi cái áp dụng cho một ngữ cảnh trường hợp khác nhau. Vì vậy 1 trang web có tính năng cho phép dịch tài liệu bằng nhiều mô hình khác nhau được A quan tâm đến và sử dụng để dịch những tài liệu khác nhau.
 
 ### Architecture
-- Sử dụng công nghệ Cookiecutter Django cung cấp template cho một ứng dụng Django hoàn chỉnh. 
+- Sử dụng công nghệ Cookiecutter Django cung cấp template cho một ứng dụng Django hoàn chỉnh.
 https://cookiecutter-django.readthedocs.io/en/latest/index.html
 - Tích hợp sẵn các công nghệ hiện đại vào ứng dụng như:
 + Docker trong việc đóng gói sảm phẩm triển khai và quản lý môi trường.
