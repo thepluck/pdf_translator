@@ -55,11 +55,20 @@
                     aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
             </button>
+            {% if request.user.is_authenticated %}
+            <a class="navbar-brand" href="/users">PDF Translator</a>
+            {% else %}
             <a class="navbar-brand" href="{% url 'home' %}">PDF Translator</a>
+            {% endif %}
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
               <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
+                   {% if request.user.is_authenticated %}
+                  <a class="nav-link" href="/users">Home <span class="visually-hidden">(current)</span></a>
+                    {% else %}
                   <a class="nav-link" href="{% url 'home' %}">Home <span class="visually-hidden">(current)</span></a>
+                  {% endif %}
+
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" href="{% url 'about' %}">About</a>
@@ -103,7 +112,14 @@
         {% endif %}
         {% block main %}
           {% block content %}
+            {% if request.user.is_authenticated %}
             <p>Use this document as a way to quick start any new project.</p>
+              <p></p>
+            {% else %}
+              <p> Vui lòng đăng nhập để sử dụng tính năng </p>
+            {% endif %}
+
+
           {% endblock content %}
         {% endblock main %}
       </div>
