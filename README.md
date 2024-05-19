@@ -9,6 +9,9 @@ INT-2008 final project
 - Link Demo: https://drive.google.com/file/d/1MFC88zhkR9ftI_wu_TUpmThqTBdHKXhE/view?fbclid=IwZXh0bgNhZW0CMTAAAR1PjR1IlARhqglqvFHX5RpNuChHcU55dY7nmJ8hmkTXP-06Sc3nz2hemkY_aem_AUOzM4bBkfXduy0hDU4hx4U1J_M5tAnNDGoImjPkSJKhJ-1RKNdEkHYFhRFBVA9LrHKsBkh9jWLp24V_q0SUVlBU
 - Link Báo cáo: https://docs.google.com/document/d/1n2iBfOnevw4AwQ0Db6yu2tAbqWQGsZ40/edit?usp=sharing&ouid=108325216285804048496&rtpof=true&sd=true
 
+- Link model : https://drive.google.com/drive/folders/13lYPPAkNqCDgQldid83cPpRfAe-yzANX?usp=sharing
+
+  
 [![Built with Cookiecutter Django](https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg?logo=cookiecutter)](https://github.com/cookiecutter/cookiecutter-django/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
@@ -17,6 +20,8 @@ License: MIT
 ## Website dịch văn bản file tài liệu tiếng Anh sang tiếng Việt.
 
 ## Cách chạy dự án
+- Copy 2 file trong phần <a href='https://drive.google.com/drive/folders/13lYPPAkNqCDgQldid83cPpRfAe-yzANX?usp=sharing'> model</a>  vào thư mục
+  <a href='https://github.com/thepluck/pdf_translator/tree/master/pdf_translator/static'>static </a>
 
 ## Các lệnh chạy ứng dụng trên local
 
